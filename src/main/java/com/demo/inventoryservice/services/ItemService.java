@@ -41,4 +41,27 @@ public class ItemService {
             return true;
         }
     }
+
+    public boolean updateItem(Item item) {
+        Item it = itemList.stream().filter(s->s.getItemId()== item.getItemId()).findAny().orElse(null);
+        if(it==null){
+            return false;
+        }
+        itemList.add(itemList.indexOf(it), item);
+        return true;
+    }
+
+    public void deleteAll() {
+        itemList.clear();
+    }
+
+    public boolean deleteById(int id) {
+        Item it = itemList.stream().filter(s->s.getItemId()== id).findAny().orElse(null);
+        if(it==null){
+            return false;
+        }
+        itemList.remove(itemList.indexOf(it));
+        return true;
+    }
+
 }
