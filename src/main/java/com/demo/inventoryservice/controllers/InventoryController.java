@@ -3,12 +3,10 @@ package com.demo.inventoryservice.controllers;
 import com.demo.inventoryservice.entities.Item;
 import com.demo.inventoryservice.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController

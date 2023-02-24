@@ -1,9 +1,16 @@
 package com.demo.inventoryservice.entities;
 
 
-import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+import java.time.LocalDateTime;
+@Entity
 public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int itemId;
     private String itemName;
     private String itemEnteredByUser;
