@@ -1,67 +1,54 @@
 package com.demo.inventoryservice.services;
 
 import com.demo.inventoryservice.entities.Item;
+import com.demo.inventoryservice.repositories.ItemRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ItemService {
     private List<Item> itemList;
+    @Autowired
+    private ItemRepository itemRepository;
 
-    @PostConstruct
-    private void addIniItems() {
-        itemList = new ArrayList<>();
-        LocalDateTime localDateTime = LocalDateTime.now();
-        itemList.add(new Item(100,"Gear box",localDateTime));
-        itemList.add(new Item(200,"Tyre",localDateTime.minusHours(2)));
-        itemList.add(new Item(300,"Break pads",localDateTime.minusHours(3)));
+    public List<Item> getItemList () throws NoSuchElementException {
+        return itemRepository.findAll();
     }
 
-    public List<Item> getItemList () {
-        return itemList;
+    public Item getItemById(int id) throws NoSuchElementException {
+        return itemRepository.findById(id).get();
     }
 
-    public Item getItemById(int id) {
-        return itemList
-                .stream()
-                .filter(s->s.getItemId()==id)
-                .findAny()
-                .orElse(null);
+    public void addItem(Item item) throws Exception{
+        itemRepository.save(item);
     }
 
-    public boolean addItem(Item item) {
-        if(itemList.stream().anyMatch(s->s.getItemId()==item.getItemId())) {
-            return false;
-        } else {
-            itemList.add(item);
+    public boolean updateItemIfExists(Item item) {
+        if(itemRepository.existsById(item.getItemId())) {
+            itemRepository.save(item);
             return true;
         }
-    }
-
-    public boolean updateItem(Item item) {
-        Item it = itemList.stream().filter(s->s.getItemId()== item.getItemId()).findAny().orElse(null);
-        if(it==null){
-            return false;
-        }
-        itemList.add(itemList.indexOf(it), item);
-        return true;
+        return false;
     }
 
     public void deleteAll() {
-        itemList.clear();
+        itemRepository.deleteAll();
     }
 
     public boolean deleteById(int id) {
-        Item it = itemList.stream().filter(s->s.getItemId()== id).findAny().orElse(null);
-        if(it==null){
+        try {
+            itemRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
             return false;
         }
-        itemList.remove(itemList.indexOf(it));
-        return true;
+
     }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class InventoryController {
@@ -19,20 +20,43 @@ public class InventoryController {
     }
 
     @GetMapping("/app/item")
-    public List<Item> getItems() {
-        return itemService.getItemList();
+    public ResponseEntity<List<Item>> getItems() {
+        ResponseEntity<List<Item>> resp;
+        try{
+            List<Item> items = itemService.getItemList();
+            resp = new ResponseEntity<>(items, HttpStatusCode.valueOf(200));
+
+        } catch (NoSuchElementException e) {
+            resp = new ResponseEntity<>(null,HttpStatusCode.valueOf(404));
+        }
+        return resp;
     }
 
     @GetMapping("/app/item/{id}")
-    public Item getItem(@PathVariable("id") int id) {
-        return itemService.getItemById(id);
+    public ResponseEntity<Item> getItem(@PathVariable("id") int id) {
+        ResponseEntity<Item> resp;
+        try{
+            Item items = itemService.getItemById(id);
+            resp = new ResponseEntity<>(items, HttpStatusCode.valueOf(200));
+
+        } catch (NoSuchElementException e) {
+            resp = new ResponseEntity<>(null,HttpStatusCode.valueOf(404));
+        }
+        return resp;
     }
 
     @PostMapping(value = "/app/item",
             consumes = {"application/json"},
             produces = {"application/json"})
-    public void addItem(@RequestBody Item item) {
-        itemService.addItem(item);
+    public ResponseEntity<Item> addItem(@RequestBody Item item) {
+        ResponseEntity<Item> resp = null;
+        try {
+            itemService.addItem(item);
+            resp = new ResponseEntity<>(item, HttpStatusCode.valueOf(201));
+        } catch (Exception e) {
+            resp = new ResponseEntity<>(null, HttpStatusCode.valueOf(400));
+        }
+        return resp;
     }
 
     @PutMapping(value = "/app/item/{id}",
@@ -41,7 +65,7 @@ public class InventoryController {
     public ResponseEntity<Item> updateItem(@PathVariable("id") int id,@RequestBody Item item){
         System.out.println("put id: "+id);
         System.out.println("put body: "+item.toString());
-        boolean b = itemService.updateItem(item);
+        boolean b = itemService.updateItemIfExists(item);
         ResponseEntity<Item> resp;
         if(b) {
            resp = new ResponseEntity<>(item, HttpStatusCode.valueOf(200));
