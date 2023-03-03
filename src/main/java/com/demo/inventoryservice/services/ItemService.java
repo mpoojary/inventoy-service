@@ -1,21 +1,23 @@
 package com.demo.inventoryservice.services;
 
 import com.demo.inventoryservice.entities.Item;
+import com.demo.inventoryservice.repositories.ItemPagingRepository;
 import com.demo.inventoryservice.repositories.ItemRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 public class ItemService {
-    private List<Item> itemList;
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private ItemPagingRepository itemPagingRepository;
 
     public List<Item> getItemList () throws NoSuchElementException {
         return itemRepository.findAll();
@@ -51,4 +53,7 @@ public class ItemService {
 
     }
 
+    public Page<Item> getPageableItems(Pageable pageable) {
+        return itemPagingRepository.findAll(pageable);
+    }
 }

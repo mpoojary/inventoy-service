@@ -3,6 +3,8 @@ package com.demo.inventoryservice.controllers;
 import com.demo.inventoryservice.entities.Item;
 import com.demo.inventoryservice.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,7 @@ public class InventoryController {
             resp = new ResponseEntity<>(items, HttpStatusCode.valueOf(200));
 
         } catch (NoSuchElementException e) {
-            resp = new ResponseEntity<>(null,HttpStatusCode.valueOf(404));
+            resp = new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
         return resp;
     }
@@ -40,7 +42,7 @@ public class InventoryController {
             resp = new ResponseEntity<>(items, HttpStatusCode.valueOf(200));
 
         } catch (NoSuchElementException e) {
-            resp = new ResponseEntity<>(null,HttpStatusCode.valueOf(404));
+            resp = new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
         return resp;
     }
@@ -54,7 +56,7 @@ public class InventoryController {
             itemService.addItem(item);
             resp = new ResponseEntity<>(item, HttpStatusCode.valueOf(201));
         } catch (Exception e) {
-            resp = new ResponseEntity<>(null, HttpStatusCode.valueOf(400));
+            resp = new ResponseEntity<>(HttpStatusCode.valueOf(400));
         }
         return resp;
     }
@@ -63,8 +65,6 @@ public class InventoryController {
             consumes = {"application/json"},
             produces = {"application/json"})
     public ResponseEntity<Item> updateItem(@PathVariable("id") int id,@RequestBody Item item){
-        System.out.println("put id: "+id);
-        System.out.println("put body: "+item.toString());
         boolean b = itemService.updateItemIfExists(item);
         ResponseEntity<Item> resp;
         if(b) {
@@ -89,6 +89,11 @@ public class InventoryController {
             resp = new ResponseEntity<>(HttpStatusCode.valueOf(400));
         }
         return resp;
+    }
+
+    @GetMapping("/api/itemPage")
+    public Page<Item> getPageableItems(Pageable pageable) {
+        return itemService.getPageableItems(pageable);
     }
 
 }
